@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lantern Brewery - Welcome</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font family -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            /* Set the background image and make it cover the entire viewport */
+            background-image: url('uploaded:1000039343.png-b61ea629-2f61-436b-907e-e8025545995a');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+        /* Custom scrollbar styling for the content area */
+        .custom-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 255, 255, 0.4);
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-dark': '#1e1b1b',
+                        'accent-gold': '#ffbe0b',
+                        'subtle-gray': '#a1a1aa',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="text-white">
+
+    <div id="app" class="min-h-screen flex flex-col md:flex-row bg-black bg-opacity-70 backdrop-blur-sm">
+
+        <!-- Sidebar Navigation (Stacked Options) -->
+        <nav class="md:w-64 p-4 flex flex-col space-y-4 bg-primary-dark bg-opacity-90 shadow-2xl z-20">
+            <h1 class="text-3xl font-bold text-accent-gold tracking-wider mb-6 text-center">
+                Lantern Brewery
+            </h1>
+            
+            <!-- Navigation Buttons -->
+            <div class="flex flex-col space-y-3">
+                <button onclick="changePage('home')" id="nav-home" 
+                        class="nav-button p-3 rounded-xl transition duration-300 ease-in-out font-semibold text-lg text-primary-dark bg-accent-gold hover:bg-yellow-400 shadow-lg">
+                    Home
+                </button>
+                <button onclick="changePage('menu')" id="nav-menu" 
+                        class="nav-button p-3 rounded-xl transition duration-300 ease-in-out font-semibold text-lg bg-primary-dark text-subtle-gray hover:text-accent-gold hover:bg-gray-800 border border-transparent hover:border-accent-gold">
+                    Menu
+                </button>
+                <button onclick="changePage('reservation')" id="nav-reservation" 
+                        class="nav-button p-3 rounded-xl transition duration-300 ease-in-out font-semibold text-lg bg-primary-dark text-subtle-gray hover:text-accent-gold hover:bg-gray-800 border border-transparent hover:border-accent-gold">
+                    Table Reservation
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main id="content-area" class="flex-1 p-6 md:p-10 z-10 custom-scroll overflow-y-auto">
+            <h2 class="text-4xl md:text-5xl font-extrabold mb-8 text-accent-gold drop-shadow-lg">
+                Welcome to the Lantern Brewery
+            </h2>
+
+            <!-- Dynamic Content Sections -->
+            <div id="home-content" class="content-section space-y-8 bg-black bg-opacity-50 p-6 rounded-2xl shadow-xl"></div>
+            <div id="menu-content" class="content-section hidden bg-black bg-opacity-50 p-6 rounded-2xl shadow-xl"></div>
+            <div id="reservation-content" class="content-section hidden bg-black bg-opacity-50 p-6 rounded-2xl shadow-xl"></div>
+
+            <!-- Confirmation Message Box (for Reservation) -->
+            <div id="message-box" class="fixed inset-0 bg-black bg-opacity-75 hidden items-center justify-center z-50">
+                <div class="bg-primary-dark p-8 rounded-xl shadow-2xl max-w-sm w-full text-center border-t-4 border-accent-gold">
+                    <p id="message-text" class="text-xl font-semibold text-white mb-4"></p>
+                    <button onclick="document.getElementById('message-box').classList.add('hidden')"
+                            class="mt-4 px-6 py-2 bg-accent-gold text-primary-dark font-bold rounded-lg hover:bg-yellow-400 transition">
+                        Close
+                    </button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        let currentPage = 'home';
+        const homeContent = document.getElementById('home-content');
+        const menuContent = document.getElementById('menu-content');
+        const reservationContent = document.getElementById('reservation-content');
+        const contentArea = document.getElementById('content-area');
+        const navButtons = document.querySelectorAll('.nav-button');
+        const messageBox = document.getElementById('message-box');
+        const messageText = document.getElementById('message-text');
+
+        // --- Data Setup ---
+
+        const breweryDetails = {
+            specialty: "Our specialty is 'Shadow Brew,' a dark, smoky stout aged in teak barrels, offering deep notes of roasted coffee and dark chocolate. We also excel in craft lagers with a unique Indian spice infusion.",
+            address: "Located in the heart of Bangalore: 4th Floor, 100 Feet Road, Indiranagar, Bangalore - 560038, Karnataka, India."
+        };
+
+        const menuItems = {
+            alcohol: [
+                { name: "Shadow Brew", type: "Stout", details: "Dark, smoky stout with coffee and chocolate notes." },
+                { name: "Monsoon Haze", type: "IPA", details: "Tropical, hop-forward IPA with a citrus finish." },
+                { name: "Gold Lager", type: "Lager", details: "Crisp, light, infused with a hint of cardamom." },
+                { name: "Apple Cider", type: "Cider", details: "Fermented apple cider, dry and refreshing." }
+            ],
+            food: {
+                mediterranean: [
+                    { name: "Hummus Platter", details: "Served with warm pita and pickled vegetables." },
+                    { name: "Spicy Lamb Kebab", details: "Marinated in yogurt and chili, grilled to perfection." },
+                    { name: "Feta & Olive Salad", details: "Classic Greek salad with a light vinaigrette." }
+                ],
+                mexican: [
+                    { name: "Craft Tacos", details: "Pulled chicken or bean filling with fresh salsa and avocado cream." },
+                    { name: "Quesadilla Supreme", details: "Large flour tortilla filled with cheese, peppers, and onions." },
+                    { name: "Chili Lime Nachos", details: "Crispy corn chips loaded with cheese, jalapeños, and spiced beans." }
+                ]
+            }
+        };
+
+
+        // --- Render Functions ---
+
+        function renderHome() {
+            homeContent.innerHTML = `
+                <h3 class="text-3xl font-semibold text-white mb-4 border-b border-accent-gold pb-2">Our Story & Specialties</h3>
+                <p class="text-lg text-subtle-gray leading-relaxed mb-6">
+                    Lantern Brewery is more than just a place; it's an experience. Nestled under a canopy of green and illuminated by warm, inviting lanterns, we specialize in bridging traditional brewing techniques with unique local flavors.
+                </p>
+
+                <div class="space-y-4">
+                    <div class="bg-primary-dark p-4 rounded-xl shadow-inner">
+                        <h4 class="text-xl font-bold text-accent-gold mb-1">Specialty Brew:</h4>
+                        <p class="text-subtle-gray">${breweryDetails.specialty}</p>
+                    </div>
+                    <div class="bg-primary-dark p-4 rounded-xl shadow-inner">
+                        <h4 class="text-xl font-bold text-accent-gold mb-1">Find Us:</h4>
+                        <p class="text-subtle-gray">${breweryDetails.address}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderMenu() {
+            menuContent.innerHTML = `
+                <h3 class="text-3xl font-semibold text-white mb-6 border-b border-accent-gold pb-2">The Menu</h3>
+                
+                <!-- Alcohol Section -->
+                <div class="mb-8">
+                    <h4 class="text-2xl font-bold text-accent-gold mb-4">Our Craft Brews</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        ${menuItems.alcohol.map(item => `
+                            <div class="bg-primary-dark p-4 rounded-lg shadow-md border-l-4 border-accent-gold">
+                                <p class="font-bold text-xl">${item.name} <span class="text-sm font-normal text-subtle-gray">(${item.type})</span></p>
+                                <p class="text-sm text-gray-400">${item.details}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <!-- Food Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Mediterranean Food -->
+                    <div class="border border-subtle-gray/30 p-4 rounded-xl">
+                        <h4 class="text-2xl font-bold text-white mb-3 border-b border-white/20 pb-2">Mediterranean</h4>
+                        <div class="space-y-3">
+                            ${menuItems.food.mediterranean.map(item => `
+                                <div>
+                                    <p class="font-semibold text-lg text-accent-gold">${item.name}</p>
+                                    <p class="text-sm text-subtle-gray">${item.details}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <!-- Mexican Food -->
+                    <div class="border border-subtle-gray/30 p-4 rounded-xl">
+                        <h4 class="text-2xl font-bold text-white mb-3 border-b border-white/20 pb-2">Mexican Bites</h4>
+                        <div class="space-y-3">
+                            ${menuItems.food.mexican.map(item => `
+                                <div>
+                                    <p class="font-semibold text-lg text-accent-gold">${item.name}</p>
+                                    <p class="text-sm text-subtle-gray">${item.details}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderReservation() {
+            reservationContent.innerHTML = `
+                <h3 class="text-3xl font-semibold text-white mb-6 border-b border-accent-gold pb-2">Book Your Table</h3>
+                
+                <form id="reservation-form" class="space-y-5 max-w-lg mx-auto p-6 bg-primary-dark rounded-xl shadow-xl border border-accent-gold/50">
+                    <div>
+                        <label for="name" class="block text-accent-gold font-semibold mb-1">Reservation Name(s):</label>
+                        <input type="text" id="name" name="name" required
+                                class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-accent-gold focus:border-accent-gold"
+                                placeholder="Your Name and guests' names (optional)">
+                    </div>
+                    <div>
+                        <label for="persons" class="block text-accent-gold font-semibold mb-1">Number of Persons (1-10):</label>
+                        <input type="number" id="persons" name="persons" required min="1" max="10" value="2"
+                                class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-accent-gold focus:border-accent-gold">
+                    </div>
+                    <div>
+                        <label for="date" class="block text-accent-gold font-semibold mb-1">Date:</label>
+                        <input type="date" id="date" name="date" required
+                                class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-accent-gold focus:border-accent-gold">
+                    </div>
+                    <div>
+                        <label for="time" class="block text-accent-gold font-semibold mb-1">Time Slot:</label>
+                        <select id="time" name="time" required
+                                class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-accent-gold focus:border-accent-gold">
+                            <option value="">-- Select Time --</option>
+                            <option value="18:00">6:00 PM</option>
+                            <option value="19:30">7:30 PM</option>
+                            <option value="21:00">9:00 PM</option>
+                        </select>
+                    </div>
+                    
+                    <div class="pt-2">
+                        <p class="block text-accent-gold font-semibold mb-2">Payment (Mock Confirmation):</p>
+                        <div class="bg-gray-800 p-4 rounded-lg text-sm text-subtle-gray">
+                            A ₹500 holding deposit is required for confirmation. By clicking 'Confirm Reservation', you agree to a mock charge. (No actual payment will be processed)
+                        </div>
+                    </div>
+                    
+                    <button type="submit" 
+                            class="w-full mt-4 p-3 bg-accent-gold text-primary-dark font-bold rounded-xl shadow-lg hover:bg-yellow-400 transition duration-300">
+                        Confirm Reservation
+                    </button>
+                    <p id="reservation-error" class="text-red-400 text-center font-semibold hidden">Please fill out all fields correctly.</p>
+                </form>
+            `;
+            
+            // Attach form submission listener
+            document.getElementById('reservation-form').addEventListener('submit', handleReservationSubmit);
+            
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').setAttribute('min', today);
+        }
+
+        // --- Logic and State Management ---
+
+        function handleReservationSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const errorElement = document.getElementById('reservation-error');
+
+            if (!form.checkValidity()) {
+                errorElement.textContent = "Please fill out all required fields.";
+                errorElement.classList.remove('hidden');
+                return;
+            }
+            
+            errorElement.classList.add('hidden');
+
+            const name = document.getElementById('name').value || "Guest";
+            const persons = document.getElementById('persons').value;
+            const date = new Date(document.getElementById('date').value).toDateString();
+            const time = document.getElementById('time').value;
+
+            // Mock successful reservation
+            const confirmationMessage = `Thank you, ${name}! Your table for ${persons} is confirmed for ${date} at ${time}. We look forward to seeing you at Lantern Brewery!`;
+            
+            showMessage(confirmationMessage);
+            form.reset();
+            // Switch back to home view after successful reservation
+            changePage('home'); 
+        }
+
+        function showMessage(text) {
+            messageText.textContent = text;
+            messageBox.classList.remove('hidden');
+            messageBox.classList.add('flex');
+        }
+
+        function updateNavStyles(newPage) {
+            navButtons.forEach(button => {
+                const isCurrent = button.id.includes(newPage);
+                
+                // Reset styles
+                button.classList.remove('bg-accent-gold', 'text-primary-dark', 'border-accent-gold');
+                button.classList.add('bg-primary-dark', 'text-subtle-gray', 'hover:bg-gray-800', 'border-transparent');
+                
+                // Apply active styles
+                if (isCurrent) {
+                    button.classList.remove('bg-primary-dark', 'text-subtle-gray', 'hover:bg-gray-800', 'border-transparent');
+                    button.classList.add('bg-accent-gold', 'text-primary-dark', 'shadow-xl');
+                }
+            });
+        }
+
+        function changePage(newPage) {
+            currentPage = newPage;
+            
+            // Hide all content sections
+            [homeContent, menuContent, reservationContent].forEach(el => el.classList.add('hidden'));
+
+            // Show the selected section and render its content
+            if (newPage === 'home') {
+                homeContent.classList.remove('hidden');
+                renderHome();
+            } else if (newPage === 'menu') {
+                menuContent.classList.remove('hidden');
+                renderMenu();
+            } else if (newPage === 'reservation') {
+                reservationContent.classList.remove('hidden');
+                renderReservation();
+            }
+            
+            updateNavStyles(newPage);
+            contentArea.scrollTo(0, 0); // Scroll to top of content
+        }
+
+        // Initialize the app on load
+        document.addEventListener('DOMContentLoaded', () => {
+            changePage('home'); // Start on the Home page
+        });
+    </script>
+</body>
+</html>
